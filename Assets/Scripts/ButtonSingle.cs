@@ -8,13 +8,18 @@ public class ButtonSingle : MonoBehaviour
     public bool active;
     public int activeCols;
     public BoxCollider2D collision;
+    public BoxCollider2D doorCollider;
     public GameObject door;
+    public SpriteRenderer doorSprite;
     public SpriteRenderer sprite;
 
     void Start() {
         active = false;
         sprite = gameObject.GetComponent<SpriteRenderer>();
         collision = gameObject.GetComponent<BoxCollider2D>();
+        
+        doorCollider = door.GetComponent<BoxCollider2D>();
+        doorSprite = door.GetComponent<SpriteRenderer>();
     }
     void OnTriggerEnter2D(Collider2D collision) {
         Debug.Log("col enter");
@@ -22,7 +27,9 @@ public class ButtonSingle : MonoBehaviour
             activeCols++;
             sprite.color = Color.green;
             active = true;
-            door.SetActive(false);
+
+            doorCollider.enabled = false;
+            doorSprite.color = new Color(1, 1, 1, 0.3f);
         }
     }
 
@@ -33,7 +40,9 @@ public class ButtonSingle : MonoBehaviour
             if (activeCols == 0) {
                 sprite.color = Color.red;
                 active = false;
-                door.SetActive(true);
+
+                doorCollider.enabled = true;
+                doorSprite.color = new Color(1, 1, 1, 1);
             }
         }
     }
