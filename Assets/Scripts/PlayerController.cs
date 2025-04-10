@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     public BoxCollider2D boxHeldColl;
     public LayerMask boxesLayer;
     public LayerMask buttonsLayer;
+    public LayerMask wallclimbLayer;
+    public LayerMask groundLayer;
     public GameObject boxHolder;
     public Transform boxHeld;
     public GameObject canInteractIndicator;
@@ -52,6 +54,9 @@ public class PlayerController : MonoBehaviour
             gameObject.transform.localScale = new Vector2(1f, 1f); }
         else if (rb.velocity.x < 0) { flipState = true;
             gameObject.transform.localScale = new Vector2(-1f, 1f);}
+
+        if (rb.bodyType != RigidbodyType2D.Dynamic) { OnDisable(); }
+        else { OnEnable(); }
 
         //interact indicator
         if (CanInteract() || holdingBox) { canInteractIndicator.SetActive(true); }
@@ -114,6 +119,7 @@ public class PlayerController : MonoBehaviour
 
     void Jump(InputAction.CallbackContext ctx) {
         if (holdingBox) {return;}
+        if (!IsGrounded()) {return;}
         rb.AddForce(new Vector2(0.0f, jumpForce), ForceMode2D.Impulse);
     }
 
@@ -125,6 +131,10 @@ public class PlayerController : MonoBehaviour
 
         //Debug.Log("Reached switch raycast code");
         ray = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, buttonsLayer);
+        if (ray) {return true;}
+
+        //Debug.Log("Reached wallclimb raycast code");
+        ray = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, wallclimbLayer);
         if (ray) {return true;}
 
         return false;
@@ -167,6 +177,15 @@ public class PlayerController : MonoBehaviour
             else {buttonInteract.doorScript.buttonsActive--; }
             return;
         }
+
+        //Wallclimb interaction code
+        Debug.Log("Reached wallclimb raycast code");
+        ray = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, wallclimbLayer);
+        
+        if (ray) {
+            ray.transform.GetComponent<Wallclimb>().Activate(gameObject);
+            return;
+        }
     }
 
     void Menu(InputAction.CallbackContext ctx) {
@@ -181,5 +200,27 @@ public class PlayerController : MonoBehaviour
             //close menu
         }
         Debug.Log("menu pressed in current context");
+    }
+
+    public void OnEnable()
+    {
+        jumpActionKb.Enable();
+        moveRightActionKb.Enable();
+        moveLeftActionKb.Enable();
+        interactActionKb.Enable();
+        menuActionKb.Enable();
+    }
+
+    public void OnDisable()
+    {
+        jumpActionKb.Disable();
+        moveRightActionKb.Disable();
+        moveLeftActionKb.Disable();
+        interactActionKb.Disable();
+        menuActionKb.Disable();
+    }
+
+    public bool IsGrounded() {
+        return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .1f, groundLayer);
     }
 }
