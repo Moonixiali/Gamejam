@@ -6,14 +6,16 @@ public class ButtonInteract : MonoBehaviour
 {
     public bool active = false;
     public GameObject door;
-    public BoxCollider2D doorCollider;
-    public SpriteRenderer doorSprite;
+    public DoorScript doorScript;
     public SpriteRenderer sprite;
+    public LineRenderer line;
     void Start()
     {
-        doorCollider = door.GetComponent<BoxCollider2D>();
-        doorSprite = door.GetComponent<SpriteRenderer>();
+        doorScript = door.GetComponent<DoorScript>();
         sprite = gameObject.GetComponent<SpriteRenderer>();
+
+        line.SetPosition(0, (gameObject.transform.position + new Vector3(0, 0, -1)));
+        line.SetPosition(1, (door.transform.position + new Vector3(0, 0, -1)));
     }
 
     // Update is called once per frame
@@ -21,14 +23,12 @@ public class ButtonInteract : MonoBehaviour
     {
         if (active) {
             sprite.color = Color.green;
-            doorCollider.enabled = false;
-            doorSprite.color = new Color(1, 1, 1, 0.3f);
+            line.SetColors(Color.green, Color.green);
             return;
         }
         else {
             sprite.color = Color.red;
-            doorCollider.enabled = true;
-            doorSprite.color = new Color(1, 1, 1, 1);
+            line.SetColors(Color.red, Color.red);
         }
     }
 }

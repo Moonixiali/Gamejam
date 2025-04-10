@@ -12,10 +12,12 @@ public class PlayerController : MonoBehaviour
     public PlayerInput playerInputObject;
     public Rigidbody2D rb;
     public BoxCollider2D coll;
+    public BoxCollider2D boxHeldColl;
     public LayerMask boxesLayer;
     public LayerMask buttonsLayer;
     public GameObject boxHolder;
     public Transform boxHeld;
+    public GameObject canInteractIndicator;
 
     [Header("Actions Keyboard")]
     public InputAction moveRightActionKb;
@@ -50,11 +52,16 @@ public class PlayerController : MonoBehaviour
             gameObject.transform.localScale = new Vector2(1f, 1f); }
         else if (rb.velocity.x < 0) { flipState = true;
             gameObject.transform.localScale = new Vector2(-1f, 1f);}
+
+        //interact indicator
+        if (CanInteract() || holdingBox) { canInteractIndicator.SetActive(true); }
+        else { canInteractIndicator.SetActive(false); }
     }
 
     public void Start() {
         rb = gameObject.GetComponent<Rigidbody2D>();
         coll = gameObject.GetComponent<BoxCollider2D>();
+        boxHeldColl = boxHolder.GetComponent<BoxCollider2D>();
 
         string rebinds = PlayerPrefs.GetString("rebinds", string.Empty);
         if (string.IsNullOrEmpty(rebinds)){return;}
@@ -110,6 +117,19 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(new Vector2(0.0f, jumpForce), ForceMode2D.Impulse);
     }
 
+    public bool CanInteract() {
+        RaycastHit2D ray;
+        //Debug.Log("Reached box raycast code");
+        ray = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, boxesLayer);
+        if (ray) {return true;}
+
+        //Debug.Log("Reached switch raycast code");
+        ray = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, buttonsLayer);
+        if (ray) {return true;}
+
+        return false;
+    }
+
     void Interact(InputAction.CallbackContext ctx) {
 
         RaycastHit2D ray;
@@ -117,6 +137,8 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Interact pressed in this context");
         if (holdingBox) {
             holdingBox = false;
+            boxHeldColl.enabled = false;
+            boxHeld.GetComponent<BoxCollider2D>().enabled = true;
             boxHeld.transform.parent = null;
             return;
         }
@@ -129,6 +151,8 @@ public class PlayerController : MonoBehaviour
             holdingBox = true;
             ray.transform.SetParent(boxHolder.transform, true);
             boxHeld = ray.transform;
+            boxHeld.GetComponent<BoxCollider2D>().enabled = false;
+            boxHeldColl.enabled = true;
             return;
         }
 
@@ -137,8 +161,10 @@ public class PlayerController : MonoBehaviour
         ray = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, buttonsLayer);
         
         if (ray) {
-            ray.transform.GetComponent<ButtonInteract>().active =
-                !ray.transform.GetComponent<ButtonInteract>().active;
+            var buttonInteract = ray.transform.GetComponent<ButtonInteract>();
+            buttonInteract.active = !buttonInteract.active;
+            if (buttonInteract.active) { buttonInteract.doorScript.buttonsActive++; }
+            else {buttonInteract.doorScript.buttonsActive--; }
             return;
         }
     }
