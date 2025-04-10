@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D rb;
     public BoxCollider2D coll;
     public LayerMask boxesLayer;
+    public LayerMask climbableLayer;
     public GameObject boxHolder;
     public Transform boxHeld;
 
@@ -37,6 +38,7 @@ public class PlayerController : MonoBehaviour
     public bool flipState = false; //false = right; true = left;
     public float flipStateFloat() {if (flipState) {return -1;} else {return 1;}}
     public bool holdingBox = false;
+    public bool climbing = false;
 
     // Update is called once per frame
     void Update() {
@@ -124,6 +126,23 @@ public class PlayerController : MonoBehaviour
             ray.transform.SetParent(boxHolder.transform, true);
             boxHeld = ray.transform;
         }
+
+        RaycastHit2D climbRay = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, climbableLayer);
+
+        if(climbRay) {
+            climbing = true;
+            Debug.Log("Climbing started");
+            StartCoroutine(Climbing());
+        }
+
+    }
+
+    IEnumerator Climbing()
+    {
+        new WaitForSeconds(2f);
+        Debug.Log("ending climb");
+        climbing = false;
+        yield return null;
     }
 
     void Menu(InputAction.CallbackContext ctx) {
