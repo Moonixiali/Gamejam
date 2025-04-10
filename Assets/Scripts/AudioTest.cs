@@ -21,7 +21,7 @@ public class AudioTest : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            audioManager.PlayOneshotSFX(audioManager.deathClip);
+                audioManager.PlayOneshotSFX(audioManager.deathClip);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {

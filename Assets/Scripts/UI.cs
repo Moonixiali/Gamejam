@@ -41,6 +41,12 @@ public class UI : MonoBehaviour
         SceneManager.LoadScene(level, LoadSceneMode.Single);
     }
 
+    //this should work, theoretically. ran out of time to test before being told to head off
+    public void LoadNextlevel()
+    {
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+
     public void StartRebindKey(TextMeshProUGUI text, InputActionReference actionToChange){
         Debug.Log("Trying to rebind key!");
         text.text = "...";
