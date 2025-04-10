@@ -41,11 +41,13 @@ public class AudioTest : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Alpha7))
         {
+            //needed to get repeating SFX to play as intended
             audioManager.repeatingSFXSource.clip = audioManager.boxScrapeClip;
             audioManager.repeatingSFXSource.Play();
         }
         else if (Input.GetKeyDown(KeyCode.Alpha8))
         {
+            //needed to get repeating SFX to play as intended
             audioManager.repeatingSFXSource.clip = audioManager.climbP1;
             audioManager.repeatingSFXSource.Play();
         }
