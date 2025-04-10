@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +13,7 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D rb;
     public BoxCollider2D coll;
     public LayerMask boxesLayer;
+    public LayerMask buttonsLayer;
     public GameObject boxHolder;
     public Transform boxHeld;
 
@@ -109,6 +111,9 @@ public class PlayerController : MonoBehaviour
     }
 
     void Interact(InputAction.CallbackContext ctx) {
+
+        RaycastHit2D ray;
+
         Debug.Log("Interact pressed in this context");
         if (holdingBox) {
             holdingBox = false;
@@ -116,13 +121,25 @@ public class PlayerController : MonoBehaviour
             return;
         }
         
-        Debug.Log("Reached raycast code");
-        RaycastHit2D ray = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, boxesLayer);
+        //Box interaction code
+        Debug.Log("Reached box raycast code");
+        ray = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, boxesLayer);
         
         if (ray) {
             holdingBox = true;
             ray.transform.SetParent(boxHolder.transform, true);
             boxHeld = ray.transform;
+            return;
+        }
+
+        //Switch interaction code
+        Debug.Log("Reached switch raycast code");
+        ray = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, buttonsLayer);
+        
+        if (ray) {
+            ray.transform.GetComponent<ButtonInteract>().active =
+                !ray.transform.GetComponent<ButtonInteract>().active;
+            return;
         }
     }
 
