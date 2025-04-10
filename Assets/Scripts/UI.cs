@@ -38,6 +38,7 @@ public class UI : MonoBehaviour
 
     public void LoadLevel(int level){
         Debug.Log("Tried loading level: " + level);
+        Time.timeScale = 1.0f;
         SceneManager.LoadScene(level, LoadSceneMode.Single);
     }
 
