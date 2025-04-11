@@ -11,15 +11,23 @@ public class Wallclimb : MonoBehaviour
     public GameObject playerA;
     public Rigidbody2D rb;
     public bool active;
+
     
+    public Animator playerAnimation;
+
+
+
     public void Activate(GameObject player) {
         rb = player.GetComponent<Rigidbody2D>();
+        playerAnimation = player.GetComponent<Animator>();
+
         playerA = player;
         player.transform.position = point1.transform.position;
         rb.bodyType = RigidbodyType2D.Kinematic;
         distance = point2.transform.position.y - point1.transform.position.y;
 
         active = true;
+        playerAnimation.SetBool("Climbing", true);
     }
 
     public void Update() {
@@ -35,6 +43,7 @@ public class Wallclimb : MonoBehaviour
                 active = false;
                 rb.bodyType = RigidbodyType2D.Dynamic;
                 rb.AddForce(new Vector2(0, speed), ForceMode2D.Impulse);
+                playerAnimation.SetBool("Climbing", false);
             }
         }
     }
