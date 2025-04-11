@@ -15,13 +15,10 @@ public class PlayerController : MonoBehaviour
     public BoxCollider2D coll;
     public BoxCollider2D boxHeldColl;
     public LayerMask boxesLayer;
-
     public LayerMask climbableLayer;
-
     public LayerMask buttonsLayer;
     public LayerMask wallclimbLayer;
     public LayerMask groundLayer;
-
     public GameObject boxHolder;
     public Transform boxHeld;
     public GameObject canInteractIndicator;
@@ -52,7 +49,6 @@ public class PlayerController : MonoBehaviour
     public bool win = false;
 
     public bool climbing = false;
-    public bool win = false;
 
 
     // Update is called once per frame
@@ -174,6 +170,27 @@ public class PlayerController : MonoBehaviour
             boxHeld = ray.transform;
             boxHeld.GetComponent<BoxCollider2D>().enabled = false;
             boxHeldColl.enabled = true;
+            return;
+        }
+
+        //Switch interaction code
+        Debug.Log("Reached switch raycast code");
+        ray = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, buttonsLayer);
+        
+        if (ray) {
+            var buttonInteract = ray.transform.GetComponent<ButtonInteract>();
+            buttonInteract.active = !buttonInteract.active;
+            if (buttonInteract.active) { buttonInteract.doorScript.buttonsActive++; }
+            else {buttonInteract.doorScript.buttonsActive--; }
+            return;
+        }
+
+        //Wallclimb interaction code
+        Debug.Log("Reached wallclimb raycast code");
+        ray = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, wallclimbLayer);
+        
+        if (ray) {
+            ray.transform.GetComponent<Wallclimb>().Activate(gameObject);
             return;
         }
 
