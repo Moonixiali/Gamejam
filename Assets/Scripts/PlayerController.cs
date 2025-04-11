@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -20,6 +21,7 @@ public class PlayerController : MonoBehaviour
     public GameObject boxHolder;
     public Transform boxHeld;
     public GameObject canInteractIndicator;
+    public GameObject pauseMenu;
 
     [Header("Actions Keyboard")]
     public InputAction moveRightActionKb;
@@ -43,6 +45,7 @@ public class PlayerController : MonoBehaviour
     public bool flipState = false; //false = right; true = left;
     public float flipStateFloat() {if (flipState) {return -1;} else {return 1;}}
     public bool holdingBox = false;
+    public bool win = false;
 
     // Update is called once per frame
     void Update() {
@@ -189,15 +192,22 @@ public class PlayerController : MonoBehaviour
     }
 
     void Menu(InputAction.CallbackContext ctx) {
+        if (win) {return;}
+        MenuMethod();
+    }
+
+    public void MenuMethod() {
         if (paused == false) {
             Time.timeScale = 0.0f;
             paused = true;
             //open menu
+            pauseMenu.SetActive(true);
         }
         else if (paused == true) {
             Time.timeScale = 1.0f;
             paused = false;
             //close menu
+            pauseMenu.SetActive(false);
         }
         Debug.Log("menu pressed in current context");
     }
