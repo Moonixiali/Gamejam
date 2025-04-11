@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Box
   - Ground
+  - PlayerKill
+  - PlayerFinishLevel
   layers:
   - Default
   - TransparentFX
@@ -16,7 +18,7 @@ TagManager:
   - Boxes
   - Switches
   - ClimbableWall
-  - 
+  - MovingPlatform
   - 
   - 
   - 
