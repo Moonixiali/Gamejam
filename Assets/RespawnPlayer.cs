@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RespawnPlayer : MonoBehaviour
 {
@@ -21,6 +22,12 @@ public class RespawnPlayer : MonoBehaviour
         if (collision.gameObject.CompareTag("PlayerFinishLevel"))
         {
             canvas.SetActive(true);
+            Invoke("LoadMainMenu", 5);
         }
+    }
+
+    private void LoadMainMenu()
+    {
+        SceneManager.LoadScene(0);
     }
 }
