@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour
     public bool flipState = false; //false = right; true = left;
     public float flipStateFloat() {if (flipState) {return -1;} else {return 1;}}
     public bool holdingBox = false;
+    public bool win = false;
 
     public bool climbing = false;
     public bool win = false;
