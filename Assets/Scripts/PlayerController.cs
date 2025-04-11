@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     public BoxCollider2D coll;
     public BoxCollider2D boxHeldColl;
     public LayerMask boxesLayer;
+    public LayerMask climbableLayer;
     public LayerMask buttonsLayer;
     public LayerMask wallclimbLayer;
     public LayerMask groundLayer;
@@ -46,6 +47,9 @@ public class PlayerController : MonoBehaviour
     public float flipStateFloat() {if (flipState) {return -1;} else {return 1;}}
     public bool holdingBox = false;
     public bool win = false;
+
+    public bool climbing = false;
+
 
     // Update is called once per frame
     void Update() {
@@ -189,6 +193,44 @@ public class PlayerController : MonoBehaviour
             ray.transform.GetComponent<Wallclimb>().Activate(gameObject);
             return;
         }
+
+        //Switch interaction code
+        Debug.Log("Reached switch raycast code");
+        ray = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, buttonsLayer);
+        
+        if (ray) {
+            var buttonInteract = ray.transform.GetComponent<ButtonInteract>();
+            buttonInteract.active = !buttonInteract.active;
+            if (buttonInteract.active) { buttonInteract.doorScript.buttonsActive++; }
+            else {buttonInteract.doorScript.buttonsActive--; }
+            return;
+        }
+
+        //Wallclimb interaction code
+        Debug.Log("Reached wallclimb raycast code");
+        ray = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, wallclimbLayer);
+        
+        if (ray) {
+            ray.transform.GetComponent<Wallclimb>().Activate(gameObject);
+            return;
+        }
+
+        RaycastHit2D climbRay = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, new Vector2(flipStateFloat(), 0f), .1f, climbableLayer);
+
+        if(climbRay) {
+            climbing = true;
+            Debug.Log("Climbing started");
+            StartCoroutine(Climbing());
+        }
+
+    }
+
+    IEnumerator Climbing()
+    {
+        new WaitForSeconds(2f);
+        Debug.Log("ending climb");
+        climbing = false;
+        yield return null;
     }
 
     void Menu(InputAction.CallbackContext ctx) {
